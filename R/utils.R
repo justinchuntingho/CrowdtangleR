@@ -1,14 +1,16 @@
-make_query <- function(url, params = NULL, token, max_error = 4, verbose = TRUE) {
+make_query <- function(url, params, max_error = 4, verbose = TRUE) {
   count <- 0
   while (TRUE) {
     if (count >= max_error) {
       stop("Too many errors.")
     }
-    if(!is.null(params)){
-      r <- httr::GET(url, query = params)
-    } else {
+
+    if(missing(params)){
       r <- httr::GET(url)
+    } else {
+      r <- httr::GET(url, query = params)
     }
+
     status_code <- httr::status_code(r)
     if (!status_code %in% c(200, 429, 503)) {
       stop(paste("something went wrong. Status code:", httr::status_code(r)))

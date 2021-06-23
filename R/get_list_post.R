@@ -46,7 +46,7 @@ get_list_post <- function(listIds,
   }
   df_all <- data.frame()
   page_num <- 0
-  response <- make_query(endpoint_url, params, token)
+  response <- make_query(endpoint_url, params)
   next_page <- response$result$pagination$nextPage
   df <- response$result$posts
   if(!is.null(data_path)){
@@ -58,7 +58,7 @@ get_list_post <- function(listIds,
 
   # Get next pages
   while(!is.null(next_page)){
-    response <- make_query(next_page)
+    response <-  make_query(next_page)
     next_page <- response$result$pagination$nextPage
     df <- response$result$posts
     if(!is.null(data_path)){
