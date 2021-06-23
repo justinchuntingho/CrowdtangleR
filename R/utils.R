@@ -2,7 +2,7 @@ make_query <- function(url, params, max_error = 4, verbose = TRUE) {
   count <- 0
   while (TRUE) {
     if (count >= max_error) {
-      stop("Too many errors.")
+      stop(paste("Something went wrong. Status code:", httr::status_code(r)))
     }
 
     if(missing(params)){
@@ -12,20 +12,18 @@ make_query <- function(url, params, max_error = 4, verbose = TRUE) {
     }
 
     status_code <- httr::status_code(r)
-    if (!status_code %in% c(200, 429, 503)) {
-      stop(paste("something went wrong. Status code:", httr::status_code(r)))
-    }
+
     if (status_code == 200) {
       break()
-    }
-    if (status_code == 503) {
-      count <- count + 1
-      Sys.sleep(count * 5)
     }
     if (status_code == 429) {
       .vcat(verbose, "Rate limit reached, sleeping... \n")
       count <- count + 1
       Sys.sleep(60)
+    } else {
+      .vcat(verbose, paste("Retrying. Status code:", httr::status_code(r), "\n"))
+      count <- count + 1
+      Sys.sleep(count * 5)
     }
   }
   jsonlite::fromJSON(httr::content(r, "text"), flatten = TRUE)
