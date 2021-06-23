@@ -4,10 +4,10 @@ make_query <- function(url, params = NULL, token, max_error = 4, verbose = TRUE)
     if (count >= max_error) {
       stop("Too many errors.")
     }
-    if(is.null(params)){
-      r <- httr::GET(url)
-    } else {
+    if(!is.null(params)){
       r <- httr::GET(url, query = params)
+    } else {
+      r <- httr::GET(url)
     }
     status_code <- httr::status_code(r)
     if (!status_code %in% c(200, 429, 503)) {
